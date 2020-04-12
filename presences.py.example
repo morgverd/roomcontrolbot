@@ -1,0 +1,24 @@
+
+"""
+listOfPrecences = {
+	"status name" : "method",
+    "status name" : "method" <- See no ,
+}
+
+How to set your own presences.
+Above is a base layout. You should enter a status and then a method next to it.
+You MUST ensure that the method name is either "playing" or "watching" in LOWERCASE.
+After each line you should include a comma. HOWEVER, you must make sure that the last line doesnt.
+
+"""
+
+# Do not change this variable name
+listOfPrecences = {
+    "with code" : "playing",
+    "with python3" : "playing",
+    "MorgVerds RoomControlBot" : "playing",
+    "on GitHub" : "playing",
+    "some YouTube" : "watching",
+    "some Twitch" : "watching"
+}
+

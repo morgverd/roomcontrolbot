@@ -1,0 +1,29 @@
+{
+    "token" : "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "prefix" : ">>",
+    "skipsafeimports" : "FALSE",
+    "ownerID" : 100000000000000000,
+    "serverID" : 100000000000000000,
+    "afkvoice_channel" : 100000000000000000,
+    "debugChannel" : 100000000000000000,
+    "muteassignrole" : "FALSE",
+    "roleIDs" : {
+        "admin" : 100000000000000000,
+        "music" : 100000000000000000,
+        "canusebot" : 100000000000000000,
+        "bypassmusiclimit" : 100000000000000000,
+        "canusensfw" : 100000000000000000,
+        "mutedrole" : 100000000000000000
+    },
+    "allowedtimes" : {
+        "minimumtime" : 12,
+        "maximumtime" : 21
+    },
+    "web" : {
+        "localIP" : "192.168.XX.XX",
+        "port" : "8000"
+    },
+    "rootpath" : "/home/location/of/bot",
+    "allowNSFWcommands" : "TRUE",
+    "apiKey" : "XXXXXXXXXXXXX"
+}
