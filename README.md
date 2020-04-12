@@ -45,7 +45,7 @@ sudo apt-get install alsa-utils
 sudo apt-get install php
 ```
 ## Configuration
-First, rename ``config.json.example`` to ``config.json``. Inside the ``config.json`` file it should look like this:
+First, rename ``config.json.example`` to ``config.json``. Then, You should rename ``presences.example.py`` to ``presences.py`` and open it up to configure it. The configuration should be explained inside. Inside the ``config.json`` these are the base settings.
 
 
 ``token`` = The Token given to you from [here](https://discordapp.com/developers/applications/).
