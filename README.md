@@ -64,6 +64,8 @@ First, rename ``config.json.example`` to ``config.json``. Then, You should renam
 \
 ``muteassignrole`` = Should a role be given to muted people, If ``FALSE`` it will just remove any messages from muted people.
 \
+``requireNSFWrole`` = Should a role be required to use NSFW commands?
+\
 \
 ``roleIDs``
 \

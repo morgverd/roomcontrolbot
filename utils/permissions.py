@@ -21,12 +21,17 @@ class Permissions():
         bot = self.bot
         isowner, __ = await bot.permissions_isowner(self, user)
         if isowner: return (True, "User is the Owner")
+        if rolename.lower() == "canusensfw":
+            # Check configuration to see if a role is required
+            if bot.config["requireNSFWrole"] == "FALSE":
+                # Role not needed
+                return (True, "NSFW role is not required in Config")
         # Check that the role is valid
         try:
             roleid = str(bot.config["roleIDs"][rolename])
         except Exception:
             print("[PERMISSIONS] Role '" + rolename + "' Doesn't exist")
-            return False
+            return (False, (rolename + " doesnt Exist"))
         for role in user.roles:
             if (roleid == str(role.id)): return (True, "User has role")
         return (False, "You are missing the needed role to do this.")

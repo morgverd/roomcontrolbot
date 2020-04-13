@@ -7,6 +7,7 @@
     "afkvoice_channel" : 100000000000000000,
     "debugChannel" : 100000000000000000,
     "muteassignrole" : "FALSE",
+    "requireNSFWrole" : "FALSE",
     "roleIDs" : {
         "admin" : 100000000000000000,
         "music" : 100000000000000000,
