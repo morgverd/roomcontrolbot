@@ -199,7 +199,7 @@ async def on_ready():
     if (await bot.permissions_restrictedtime(bot)):
         await bot.speak(bot, "Initialising", isbot=True)
     else:
-        print("[LAUNCHER] Couldn't speak as its a restricted time")
+        print("[LAUNCHER][SPEAK] Couldn't speak as its a restricted time")
 
 @bot.event
 async def on_message(message):
@@ -307,7 +307,7 @@ async def presence_changer():
     if (await bot.permissions_restrictedtime(bot)):
         await bot.speak(bot, "Ready", isbot=True)
     else:
-        print("[LAUNCHER] Couldn't speak as its a restricted time")
+        print("[LAUNCHER][SPEAK] Couldn't speak as its a restricted time")
     
     usedIDs = []
 
