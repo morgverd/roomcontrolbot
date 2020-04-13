@@ -97,8 +97,8 @@ from utils.funcs import Funcs
 from utils.generators import Generators
 from utils.permissions import Permissions
 from utils.filters import Filters
+from utils.hooks import Hooks
 import difflib
-
 from discord.ext import commands
 import discord, asyncio
 
@@ -119,6 +119,9 @@ bot.safe_delete = Funcs.safe_delete
 bot.killmusic = Funcs.killmusic
 bot.read_raw = Funcs.read_raw
 bot.speak = Funcs.speak
+bot.cleanString = Funcs.cleanString
+
+bot.hook = Hooks
 
 # Generators defintion
 bot.generators = Generators
@@ -196,7 +199,9 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    await bot.hook.messageSent(bot, message)
     if (((bot.config["token"]).upper()) in ((message.content).upper())):
+        await bot.hook.tokenSent(bot, message)
         print(Fore.YELLOW + "[LAUNCHER][WARNING] Token was mentioned in chat, Removing it" + Style.RESET_ALL)
         # Token is in message
         await bot.safe_delete(message)
@@ -230,7 +235,8 @@ async def on_message(message):
         # In PM's
         if ((strip_b.upper()) == "HELP"):
             await bot.process_commands(message) # If its help
-            return            
+            return
+        await bot.hook.messageInPMs(bot, message)
         await message.channel.send("Well. :eyes:  We aren't in a Discord Server! Im an exclusive guy. If you want me please talk to me in a Discord Server. I dont do PM's :rolling_eyes:")
         return
     else:
@@ -255,7 +261,9 @@ async def on_message(message):
                     i += 1
 
                 fixedString = ("".join(fixedList))
+                oldmessage = message
                 message.content = fixedString # Replace content with Fixed string
+                await bot.hook.commandSent(bot, oldmessage, message)
                 await bot.process_commands(message)
                 return
 
@@ -269,7 +277,7 @@ async def on_message(message):
                 closestMatchString = "There are no predictive closest matches found"
             else:
                 closestMatchString = "The closest match to what you entered is ``" + str(closestMatches[0]).lower() + "``. Did you mean that?"
-
+            await bot.hook.commandDoesntExist(bot, message, closestMatches)
             embed=discord.Embed(title="Couldn't find that command")
             embed.set_footer(text="Will Self-Destruct in 20 seconds")
             embed.add_field(name="You Entered", value=("``"+str(cmd.lower())+"``"), inline=True)
@@ -280,7 +288,9 @@ async def on_message(message):
         else:
             # Not a command, Normal chat message.
             # Check if user is muted or not
+            await bot.hook.standardMessage(bot, message)
             if (await bot.permissions_userchatmuted(bot, message.author, takeBot=True)):
+                await bot.hook.messageDeletedUserChatBanned(bot, message)
                 await bot.safe_delete(message)
                 return
 
@@ -294,7 +304,7 @@ async def presence_changer():
     usedIDs = []
 
     import presences
-    listOfpresences = presences.listOfpresences
+    listOfpresences = presences.listOfPrecences
     lengthOfpresences = 0
     for item in listOfpresences.values():
         lengthOfpresences += 1
@@ -329,14 +339,18 @@ async def presence_changer():
             else:
                 print(Fore.RED + "[LAUNCHER][ERROR] Couldn't find valid dict item to change presence. Staying the same for now." + Style.RESET_ALL)
 
+            await bot.hook.presenceChangerUpdate(bot, (mode.upper()), string)
+
             await asyncio.sleep(30)
 
         else:
             # Playing something, Wait
+            await bot.hook.presenceChangerBlocked(bot)
             await asyncio.sleep(1)
 
 @bot.event
 async def on_disconnect():
+    await bot.hook.disconnectEvent(bot)
     print(Fore.RED + "[LAUNCHER][DISCONNECT] Bot application is quitting" + Style.RESET_ALL)
     if bot.videoPlaying:
         # Video is playing

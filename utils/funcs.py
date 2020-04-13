@@ -45,7 +45,19 @@ class Funcs():
         else:
             bot = self.bot
 
-        os.system("lxterminal -e sh "+ bot.config["rootpath"] +"/utils/say.sh '"+str(message)+"' '"+str(bot.lastVolume)+"'")
+        # Horrible, Horrible security flaw that I never figured out until I looked back
+        # Basically, A users message could be like:
+        #  hello' && rm -rf / && 'end
+        #       ^       ^         ^
+        #    Escape     |         |
+        #            Payload      |
+        #                     Re-Enter
+
+        message = (await bot.cleanString(message))
+        # Basically just makes sure its only english characters or a space.
+
+
+        #os.system("lxterminal -e sh "+ bot.config["rootpath"] +"/utils/say.sh '"+str(message)+"' '"+str(bot.lastVolume)+"'")
         print("[FUNCS][SPEAK] Said: " + message)
         return
 
@@ -64,9 +76,15 @@ class Funcs():
                     return resp
         except asyncio.TimeoutError:
             return False
-    
-    
 
+    async def cleanString(string:str):
+        letters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ ")
+        splitString = list(string)
+        cleanList = []
+        for letter in splitString:
+            if letter.upper() in letters:
+                cleanList.append(letter)
+        return "".join(cleanList)
 
     async def get_text(url:str):
         session = aiohttp.ClientSession()
