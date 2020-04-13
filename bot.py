@@ -136,6 +136,7 @@ bot.permissions_hasrole = Permissions.permissions_hasrole
 bot.permissions_isallowed = Permissions.permissions_isallowed
 bot.permissions_userchatmuted = Permissions.permissions_userchatmuted
 bot.permissions_userlivebanned = Permissions.permissions_userlivebanned
+bot.permissions_restrictedtime = Permissions.permissions_restrictedtime
 
 # Filter Manager
 bot.filter_check = Filters.filter_check
@@ -195,7 +196,10 @@ async def on_ready():
     await checkServerConnections()
     print(Fore.GREEN + "[LAUNCHER] Finished lancher." + Style.RESET_ALL)
     await bot.change_presence(activity=discord.Game(name='Initialising Bot...'))
-    await bot.speak(bot, "Initialising", isbot=True)
+    if (await bot.permissions_restrictedtime(bot)):
+        await bot.speak(bot, "Initialising", isbot=True)
+    else:
+        print("[LAUNCHER] Couldn't speak as its a restricted time")
 
 @bot.event
 async def on_message(message):
@@ -300,7 +304,11 @@ async def presence_changer():
     print("[LAUNCHER] Loading presence_changer()")
     await bot.wait_until_ready()
     await asyncio.sleep(5)
-    await bot.speak(bot, "Ready", isbot=True)
+    if (await bot.permissions_restrictedtime(bot)):
+        await bot.speak(bot, "Ready", isbot=True)
+    else:
+        print("[LAUNCHER] Couldn't speak as its a restricted time")
+    
     usedIDs = []
 
     import presences
