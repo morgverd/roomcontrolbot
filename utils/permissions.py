@@ -40,14 +40,14 @@ class Permissions():
         bot = self.bot
         isowner, __ = await bot.permissions_isowner(self, user)
         if (isowner): return (True, "User is the Owner")
-        if (await bot.permissions_restrictedtime(bot)): return (False, "You may only use me inbetween 12 and 9pm. Sorry!") # Time is bad
+        if (await bot.permissions_restrictedtime(bot)): return (False, (f"You may only use me inbetween {str(bot.config["minimumtime"])} and {str(bot.config["maximumtime"])}. Sorry!")) # Time is bad
         if (await bot.permissions_hasrole(self, user, "canusebot")): return (True, "User has role")
         return (False, "You are missing the needed role to do this.")
 
     async def permissions_restrictedtime(bot):
         hour = int(time.strftime("%H"))
-        if ((hour > int(bot.config["allowedtimes"]["maximumtime"])) or (hour < int(bot.config["allowedtimes"]["minimumtime"]))): return True
-        return False
+        if ((hour > int(bot.config["allowedtimes"]["maximumtime"])) or (hour < int(bot.config["allowedtimes"]["minimumtime"]))): return False
+        return True
 
 
     async def permissions_userchatmuted(x, user, takeBot=False):
