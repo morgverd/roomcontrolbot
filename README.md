@@ -110,7 +110,10 @@ The bot may take upto 5 minutes on its first load as it installs any missing dep
 
 ## Making Changes
 One important thing to remember if you want to add your own commands to the bot.
-\
+
+Another is that you should not edit any of the following unless you have an understanding of both Python and DiscordPY rewrite branch. If you experience any issues editing or adding to the bots code I can not be expected to provide support etc.
+
+
 Always use ``safe_delete()`` to remove messages instead of the standard ``delete_message``
 ```python
 await self.bot.safe_delete(ctx.message) # Delete the command message
@@ -172,6 +175,12 @@ async def saythis(self, ctx, *, message: str = "UwU"):
         await ctx.send(embed=(await self.bot.generate_error(self, err))) # Generate an error message with the text being the variable err that contains our error message
     return # Always return no matter what
 ```
+
+### Hooks
+There a range of hooks you can edit to execute actions when something happens. You can find all of these in ``utils/hooks.py``. Inside you will see a range of functions with alot of comments. It is important that you **do not edit any of the function names in this file**. This is because the bot relies on calling the functions with its exact name.
+
+At the end of any hook function you should always include ``return`` at the end. This is just to keep a neat code standard and to ensure that the bot knows that the function is closed.
+
 ### Defining your own config
 \
 You may be in a situation where you decide to add your own Configuration options. For this you simply add your configuration option to the ``config.json`` file and check its value using:

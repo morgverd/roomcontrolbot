@@ -24,6 +24,7 @@ class Funcs():
             return {}
 
     async def killmusic(self):
+        await self.bot.hook.killMusic(self.bot)
         os.system("killall vlc")
         self.bot.videoPlaying = False
         self.bot.subtitlesexist = False
@@ -44,6 +45,7 @@ class Funcs():
             bot = self
         else:
             bot = self.bot
+        oldmessage = message
 
         # Horrible, Horrible security flaw that I never figured out until I looked back
         # Basically, A users message could be like:
@@ -56,6 +58,7 @@ class Funcs():
         message = (await bot.cleanString(message))
         # Basically just makes sure its only english characters or a space.
 
+        await bot.hook.speaking(bot, oldmessage, message)
 
         #os.system("lxterminal -e sh "+ bot.config["rootpath"] +"/utils/say.sh '"+str(message)+"' '"+str(bot.lastVolume)+"'")
         print("[FUNCS][SPEAK] Said: " + message)

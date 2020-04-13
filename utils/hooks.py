@@ -84,3 +84,18 @@ class Hooks():
 
         # bot = Bot object
         return
+
+
+    async def killMusic(bot):
+    	# Any playing music is being killed
+
+    	# bot = Bot object
+    	return
+
+    async def speaking(bot, raw, string):
+    	# Bot is about to speak a message
+
+    	# bot = Bot object
+    	# raw = The message string sent by the user uncleaned
+    	# string = The message string cleaned and used
+    	return 
