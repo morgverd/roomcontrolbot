@@ -4,6 +4,9 @@ import os, sys, linecache, async_timeout, inspect, traceback
 import re, math, random, uuid, time, jsonpickle
 import pathlib
 
+# Do not edit unless you have a good understanding of both Python and DiscordPY.
+# Help: https://github.com/MorgVerd/roomcontrolbot/#defining-your-own-config
+
 class Hooks():
     def __init__(self, bot, cursor):
         self.bot = bot
