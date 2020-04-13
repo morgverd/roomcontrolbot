@@ -5,7 +5,7 @@ import re, math, random, uuid, time, jsonpickle
 import pathlib
 
 # Do not edit unless you have a good understanding of both Python and DiscordPY.
-# Help: https://github.com/MorgVerd/roomcontrolbot/#defining-your-own-config
+# Help: https://github.com/MorgVerd/roomcontrolbot/#hooks
 
 class Hooks():
     def __init__(self, bot, cursor):

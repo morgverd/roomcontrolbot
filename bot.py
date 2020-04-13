@@ -318,7 +318,6 @@ async def presence_changer():
 
                 # Select an item
                 if (len(usedIDs) == lengthOfpresences):
-                    # Fucking shit has hit the wall. Panic
                     usedIDs = []
 
                 i = random.randint(0, lengthOfpresences - 1)

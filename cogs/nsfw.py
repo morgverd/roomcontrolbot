@@ -53,6 +53,7 @@ class NSFW(commands.Cog):
                 return
             await ctx.channel.trigger_typing()
 
+            # Appologies
             weirdShit = [
                 "PISS",
                 "SHIT",

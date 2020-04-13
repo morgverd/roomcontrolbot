@@ -144,7 +144,6 @@ class Fun(commands.Cog):
     @commands.command(pass_context=True, aliases=["template", "meme"], brief="*|cmd", description="Get a random meme template from imgflip.")
     async def memetemplate(self, ctx, direct=None):
         await self.bot.safe_delete(ctx.message)
-        """returns bad meme (shit api)"""
         load = await self.get_json("https://api.imgflip.com/get_memes")
         url = random.choice(load['data']['memes'])
         url = url['url']
