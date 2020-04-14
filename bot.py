@@ -212,7 +212,7 @@ async def on_ready():
     print("[LAUNCHER] on_ready() triggered. Bot active.")
     # Check this version to see if its the most up-to date
     localVersion = ((open(currentDir + "/data/version.txt")).read()).replace("\n", "")
-    r = await bot.rawfromurl("https://raw.githubusercontent.com/MorgVerd/roomcontrolbot/master/data/version.txt")
+    r = await bot.rawfromurl("https://raw.githubusercontent.com/MorgVerd/roomcontrolbot/master/data/version.txt?noCache=" + str(int(time.time())))
     r = r.replace("\n", "")
     print("[LAUNCHER][VERSION CHECK] Local Version: " + localVersion)
     print("[LAUNCHER][VERSION CHECK] Remote Version: " + r)
