@@ -74,7 +74,7 @@ class Funcs():
 
         await bot.hook.speaking(bot, oldmessage, message)
 
-        #os.system("lxterminal -e sh "+ bot.config["rootpath"] +"/utils/say.sh '"+str(message)+"' '"+str(bot.lastVolume)+"'")
+        os.system("lxterminal -e sh "+ bot.config["rootpath"] +"/utils/say.sh '"+str(message)+"' '"+str(bot.lastVolume)+"'")
         print("[FUNCS][SPEAK] Said: " + message)
         return
 

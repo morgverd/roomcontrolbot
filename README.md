@@ -5,9 +5,9 @@
 
 This discord bot controls your PI3 and enables it to play music through a YouTube based search system and a text to speech system that allows users that you give a role to access to speak in your room.
 \
-This was never a serious project, Just a fun thing do to.
+This was never a serious project, just a fun thing do to.
 ## Features
-- Sound commands, Allowing select users to speak, and even play music in your room.
+- Sound commands, Allowing select users to speak and even play music in your room.
 - Music search features allowing users to play songs based upon the name alone.
 - Lyric command that gets the captions of the song (*If there is any*)
 - Volume control for administrators to easily make any song louder or quieter.
@@ -23,7 +23,7 @@ This was never a serious project, Just a fun thing do to.
 
 First, you must install the zip file. You will need to run:
 ```git
-git clone https://github.com/morgverd-1/roomcontrolbot.git
+git clone https://github.com/MorgVerd/roomcontrolbot.git
 ```
 Then, you will need to run:
 ```shell
