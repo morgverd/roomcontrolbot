@@ -102,4 +102,9 @@ class Funcs():
         except asyncio.TimeoutError:
             return False
     
-    
+    async def rawfromurl(url:str):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as r:
+                if r.status == 200:
+                    resp = await r.text()
+                    return resp

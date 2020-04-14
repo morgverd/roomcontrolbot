@@ -3,8 +3,8 @@ import socket, errno
 
 # Check versions
 version = sys.version_info
-if (not (version[0] == 3)): print("[FATAL] You must run on Python 3"); quit()
-if (not (version[1] > 4)): print("[FATAL] You must run on Python 3.4+"); quit()
+if (not (version[0] == 3)): print("[FATAL] You must run on Python 3"); sys.exit(0)
+if (not (version[1] > 4)): print("[FATAL] You must run on Python 3.4+"); sys.exit(0)
 pythonVersion = str(str(version[0]) + "." + str(version[1]))
 
 def safe_import(module, override=False, command="", install_name="", dont_print=False):
@@ -29,7 +29,7 @@ def safe_import(module, override=False, command="", install_name="", dont_print=
 
         if attempts > 5:
             if not dont_print: print(Fore.RED + "[LAUNCHER][FATAL] Tried to install " + module + " 5 times and failed each time. Exiting" + Style.RESET_ALL)
-            quit()
+            sys.exit(0)
 
 # Make sure we have everything, If we dont install it
 # Any new imports from any cogs go here
@@ -40,13 +40,13 @@ if not ((pathlib.Path("config.json")).exists()):
         print("[LAUNCHER][FATAL] Please rename 'config.json.example' to 'config.json' as outlined in the config guide here:\nhttps://github.com/morgverd/roomcontrolbot#configuration")
     else:
         print("[LAUNCHER][FATAL] Configuration file doesn't exist. Please follow the guide here:\nhttps://github.com/morgverd/roomcontrolbot#configuration")
-    quit()
+    sys.exit(0)
 if not ((pathlib.Path("presences.py")).exists()):
     if ((pathlib.Path("presences.py.example")).exists()):
         print("[LAUNCHER][FATAL] Please rename 'presences.py.example' to 'presences.py.example' as outlined in the config guide here:\nhttps://github.com/morgverd/roomcontrolbot#configuration")
     else:
         print("[LAUNCHER][FATAL] Presences file doesn't exist. Please follow the guide here:\nhttps://github.com/morgverd/roomcontrolbot#configuration")
-    quit()
+    sys.exit(0)
 
 
 with open("config.json", "r") as f:
@@ -54,7 +54,7 @@ with open("config.json", "r") as f:
         fileConfig = json.load(f)
     except json.decoder.JSONDecodeError as err:
         print("[LAUNCHER][FATAL] Configuration is not valid JSON. Are you missing any characters? Heres a helpfull message:\n" + str(err))
-        quit()
+        sys.exit(0)
 
 currentDir = str(fileConfig["rootpath"])
 
@@ -102,6 +102,7 @@ import difflib
 from discord.ext import commands
 import discord, asyncio
 
+
 print("[LAUNCHER][CONFIG] Got prefix: '" + fileConfig["prefix"] + "'")
 
 bot = commands.Bot(command_prefix=fileConfig["prefix"], description="A bot I use to inact my ausitic rage")
@@ -120,7 +121,9 @@ bot.killmusic = Funcs.killmusic
 bot.read_raw = Funcs.read_raw
 bot.speak = Funcs.speak
 bot.cleanString = Funcs.cleanString
+bot.rawfromurl = Funcs.rawfromurl
 
+# Setup hooks
 bot.hook = Hooks
 
 # Generators defintion
@@ -170,7 +173,7 @@ except socket.error as e:
         print("[FATAL][WEB] Port " + fileConfig["web"]["port"] + " is in use, Please change in config")
     else:
         print("[FATAL][WEB] " + str(e))
-    quit()
+    sys.exit(0)
 s.close()
 os.system("lxterminal -e sudo php -S " + bot.config["web"]["localIP"] + ":" + bot.config["web"]["port"] + " -t " + bot.config["rootpath"] + "/web")
 """
@@ -192,6 +195,25 @@ async def checkServerConnections():
 @bot.event
 async def on_ready():
     print("[LAUNCHER] on_ready() triggered. Bot active.")
+    # Check this version to see if its the most up-to date
+    localVersion = (open(currentDir + "/data/version.txt")).read()
+    r = await bot.rawfromurl("https://raw.githubusercontent.com/MorgVerd/roomcontrolbot/master/data/version.txt")
+    r = r.replace("\n", "")
+    print("[LAUNCHER][VERSION CHECK] Local Version: " + localVersion)
+    print("[LAUNCHER][VERSION CHECK] Remote Version: " + r)
+
+
+    if localVersion == r:
+        print("[LAUNCHER][VERSION CHECK] Up-to date")
+    else:
+        # Not up-to date
+        if not ((pathlib.Path("ignoreversion.txt")).exists()):
+            print(Fore.RED + "[LAUNCHER][VERSION CHECK] This bot is out of date. Please update by going to:\nhttps://github.com/morgverd/roomcontrolbot\nAnd re-installing it. Remember to keep the config.json file!\n\nTo ignore this warning and continue make a txt file called 'ignoreversion.txt' in the root of the bot and put '1' in it.\n\n" + Style.RESET_ALL)
+            input(Fore.RED + "Press enter to exit..." + Style.RESET_ALL)
+            sys.exit(0)
+        else:
+            print(Fore.RED + "[LAUNCHER][VERSION CHECK] Out of date, However ignore file is present." + Style.RESET_ALL)
+
     print("[LAUNCHER] Checking for server connections.")
     await checkServerConnections()
     print(Fore.GREEN + "[LAUNCHER] Finished lancher." + Style.RESET_ALL)
