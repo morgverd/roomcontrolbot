@@ -54,7 +54,7 @@ class Permissions():
         bot = self.bot
         isowner, __ = await bot.permissions_isowner(self, user)
         if (isowner): return (True, "User is the Owner")
-        if (await bot.permissions_restrictedtime(bot)): return (False, ("You may only use me inbetween "+ str(bot.config['minimumtime']) +" and "+ str(bot.config['maximumtime']) +". Sorry!")) # Time is bad
+        if not (await bot.permissions_restrictedtime(bot)): return (False, ("You may only use me inbetween "+ str(bot.config['allowedtimes']['minimumtime']) +" and "+ str(bot.config['allowedtimes']['maximumtime']) +". Sorry!")) # Time is bad
         if (await bot.permissions_hasrole(self, user, "canusebot")): return (True, "User has role")
         return (False, "You are missing the needed role to do this.")
 
