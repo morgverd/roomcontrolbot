@@ -15,6 +15,7 @@
 
 import os, sys, random, time, datetime, subprocess, socket, json, io, textwrap, traceback, base64, contextlib, logging
 import socket, errno
+from utils import integrityCheck
 
 # Check versions
 version = sys.version_info
@@ -208,6 +209,22 @@ async def checkServerConnections():
     return
 
 @bot.event
+async def on_member_update(before, after):
+    embed = None
+    if not (((str(before.nick)).upper()) == ((str(after.nick)).upper())):
+        # Nickname Change
+        embed=discord.Embed(title=f"{after.name} Changed their Nickname from ``{before.nick}`` to ``{after.nick}``", color=(await bot.generate_embedcolor()))
+    if not (((str(before.name)).upper()) == ((str(after.name)).upper())):
+        # Nickname Change
+        embed=discord.Embed(title=f"{after.name} Changed their Name from ``{before.nick}`` to ``{after.nick}``", color=(await bot.generate_embedcolor()))
+    if not embed is None:
+        channel = bot.get_channel(699287508688699392)
+        await channel.send(embed=embed)
+    return
+
+
+
+@bot.event
 async def on_ready():
     print("[LAUNCHER] on_ready() triggered. Bot active.")
     # Check this version to see if its the most up-to date
@@ -217,6 +234,10 @@ async def on_ready():
     print("[LAUNCHER][VERSION CHECK] Local Version: " + localVersion)
     print("[LAUNCHER][VERSION CHECK] Remote Version: " + r)
 
+    # File integrity check
+    #supposedIntegrity = await bot.rawfromurl("https://raw.githubusercontent.com/MorgVerd/roomcontrolbot/master/data/integritykey.txt?noCache=" + str(int(time.time())))
+    integrityKey = str(integrityCheck.getIntegrityKey(bot.config["rootpath"]))
+    print(integrityKey)
 
     if localVersion == r:
         print("[LAUNCHER][VERSION CHECK] Up-to date")
