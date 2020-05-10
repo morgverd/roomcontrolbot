@@ -171,7 +171,7 @@ bot.ismuted = False
 bot.subtitlesexist = False
 bot.header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0"}
 bot.commandsCache = []
-
+bot.runningCustomVersion = False
 bot.bannedFromChannels = []
 bot.bannedFromChannelID = {}
 
@@ -235,9 +235,17 @@ async def on_ready():
     print("[LAUNCHER][VERSION CHECK] Remote Version: " + r)
 
     # File integrity check
-    #supposedIntegrity = await bot.rawfromurl("https://raw.githubusercontent.com/MorgVerd/roomcontrolbot/master/data/integritykey.txt?noCache=" + str(int(time.time())))
+    supposedIntegrity = await bot.rawfromurl("https://raw.githubusercontent.com/MorgVerd/roomcontrolbot/master/data/integritykey.txt?noCache=" + str(int(time.time())))
     integrityKey = str(integrityCheck.getIntegrityKey(bot.config["rootpath"]))
-    print(integrityKey)
+    
+    if not supposedIntegrity == integritykey:
+    	bot.runningCustomVersion = True
+    	print(Fore.YELLOW + "[LAUNCHER] You are running an edited version to the one on GitHub." + Style.RESET_ALL)
+    	print(Fore.YELLOW + "[LAUNCHER] This means you edited some code, Or changed something in a core file." + Style.RESET_ALL)
+    	print(Fore.YELLOW + "[LAUNCHER] This could make this build unstable." + Style.RESET_ALL)
+    else:
+    	bot.runningCustomVersion = False
+    	print(Fore.GREEN + "[LAUNCHER] You are running a stable, unedited build of this bot from GitHub." + Style.RESET_ALL)
 
     if localVersion == r:
         print("[LAUNCHER][VERSION CHECK] Up-to date")
