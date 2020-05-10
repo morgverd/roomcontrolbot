@@ -91,6 +91,8 @@ First, rename ``config.json.example`` to ``config.json``. Then, You should renam
 \
 ``web``
 \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;``enabled`` = Is the web system enabled?
+\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;``localIP`` = What is your local IP address for the PI being used? Eg: 192.168.?.??
 \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;``port`` = What port number should be used?

@@ -23,28 +23,46 @@ if (not (version[0] == 3)): print("[FATAL] You must run on Python 3"); sys.exit(
 if (not (version[1] > 4)): print("[FATAL] You must run on Python 3.4+"); sys.exit(0)
 pythonVersion = str(str(version[0]) + "." + str(version[1]))
 
+def safe_download(packagename, dirpath, exitiferror=True):
+    attempts = 0
+    while True:
+        attempts += 1
+        if attempts >= 3:
+            print(Fore.RED + "[LAUNCHER][SAFEDOWNLOAD][FATAL] Could not install: " + packagename)
+            if exitiferror:
+                sys.exit(0)
+            else:
+                return False
+
+        if not ((pathlib.Path(dirpath)).exists()):
+            attempts += 1
+            os.system("sudo lxterminal -e sudo apt-get install -y " + packagename)
+
+        else:
+            print(Fore.GREEN + "[LAUNCHER][SAFEDOWNLOAD] '" + packagename + "' Installation verified." + Style.RESET_ALL)
+            return True
+
 def safe_import(module, override=False, command="", install_name="", dont_print=False):
     attempts = 0
-
     while True:
         attempts += 1
         try:
             __import__(module)
-            if not dont_print: print("[LAUNCHER] " + module + " imported")
+            if not dont_print: print("[LAUNCHER][SAFEIMPORT] " + module + " imported")
             return
         except ImportError:
             if not override:
-                if not dont_print: print(Fore.YELLOW + "[LAUNCHER][ERROR] " + module + " doesnt exist, Trying to install" + Style.RESET_ALL)
+                if not dont_print: print(Fore.YELLOW + "[LAUNCHER][SAFEIMPORT][ERROR] " + module + " doesnt exist, Trying to install" + Style.RESET_ALL)
 
                 if not install_name == "":
                     module = install_name
                 os.system("python3 -m pip install " + module)
             else:
-                if not dont_print: print(Fore.YELLOW + "[LAUNCHER][ERROR] " + module + " doesnt exist, Trying to install. Override on" + Style.RESET_ALL)
+                if not dont_print: print(Fore.YELLOW + "[LAUNCHER][SAFEIMPORT][ERROR] " + module + " doesnt exist, Trying to install. Override on" + Style.RESET_ALL)
                 os.system(command)
 
         if attempts > 5:
-            if not dont_print: print(Fore.RED + "[LAUNCHER][FATAL] Tried to install " + module + " 5 times and failed each time. Exiting" + Style.RESET_ALL)
+            if not dont_print: print(Fore.RED + "[LAUNCHER][SAFEIMPORT][FATAL] Tried to install " + module + " 5 times and failed each time. Exiting" + Style.RESET_ALL)
             sys.exit(0)
 
 # Make sure we have everything, If we dont install it
@@ -91,10 +109,10 @@ if (not (fileConfig["skipsafeimports"] == "TRUE")):
     safe_import("lxml")
     safe_import("PIL", install_name="pillow")
     safe_import("urbandict")
-    safe_import("bs4", override=True, command="sudo apt-get install python3-bs4")
+    safe_import("bs4", override=True, command="sudo apt-get install -y python3-bs4")
     safe_import("requests")
     safe_import("numpy")
-    safe_import("pornhub", override=True, command=f"sudo apt-get install git && sudo rm -r {currentDir}/pornhub-api || true && sudo git clone https://github.com/sskender/pornhub-api && sudo mv {currentDir}/pornhub-api/pornhub /usr/lib/python{pythonVersion}/pornhub")
+    safe_import("pornhub", override=True, command=f"sudo apt-get install -y git && sudo rm -r {currentDir}/pornhub-api || true && sudo git clone https://github.com/sskender/pornhub-api && sudo mv {currentDir}/pornhub-api/pornhub /usr/lib/python{pythonVersion}/pornhub")
     safe_import("aiosocks")
     safe_import("difflib")
     safe_import("gtts", install_name="gTTs")
@@ -102,7 +120,7 @@ if (not (fileConfig["skipsafeimports"] == "TRUE")):
     safe_import("pytube", install_name="pytube3")
     safe_import("pysubs2")
     safe_import("pyspeedtest")
-    safe_import("alsaaudio", override=True, command="sudo apt-get install python-alsaaudio")
+    safe_import("alsaaudio", override=True, command="sudo apt-get install -y python-alsaaudio")
     
 else:
     import colorama; from colorama import Fore, Style
@@ -175,37 +193,57 @@ bot.runningCustomVersion = False
 bot.bannedFromChannels = []
 bot.bannedFromChannelID = {}
 
+bot.webSystem = {}
+bot.webSystem["enabled"] = None
+bot.webSystem["ip"] = str(bot.config["web"]["localIP"])
+bot.webSystem["port"] = str(bot.config["web"]["port"])
+bot.webSystem["location"] = str(f"http://{bot.webSystem['ip']}:{bot.webSystem['port']}/")
+
+if (bot.config["web"]["enabled"] == "TRUE"):
+    bot.webSystem["enabled"] = True
+else:
+    bot.webSystem["enabled"] = False
+
+safe_download("vlc", "/usr/bin/vlc") # Core requirement
+safe_download("alsa-utils", "/usr/bin/alsamixer") # Core requirement
+if bot.webSystem["enabled"]: safe_download("php7.3", "/etc/php/7.3") # PHP for Web Server
 
 os.system("sudo killall vlc") # VLC Player for music
-os.system("sudo killall php") # Stop any running webserver
+if bot.webSystem["enabled"]: os.system("sudo killall php") # Stop any running webserver
 
-"""
-# Setup web
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-try:
-    s.bind((fileConfig["web"]["localIP"], int(fileConfig["web"]["port"])))
-except socket.error as e:
-    if e.errno == errno.EADDRINUSE:
-        print("[FATAL][WEB] Port " + fileConfig["web"]["port"] + " is in use, Please change in config")
-    else:
-        print("[FATAL][WEB] " + str(e))
-    sys.exit(0)
+if (bot.webSystem["enabled"]):
+    # Setup web
+    bot.webSystem["enabled"] = True
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind((fileConfig["web"]["localIP"], int(fileConfig["web"]["port"])))
+    except socket.error as e:
+        if e.errno == errno.EADDRINUSE:
+            print(Fore.RED + "[LAUNCHER][WEB][FATAL] Port " + fileConfig["web"]["port"] + " is in use, Please change in config." + Style.RESET_ALL)
+        else:
+            print(Fore.RED + "[LAUNCHER][WEB][FATAL] " + str(e) + Style.RESET_ALL)
+        print(Fore.RED + "[LAUNCHER][WEB][FATAL] Web is enabled and there is a fatal error. Please read the error above." + Style.RESET_ALL)
+        print(Fore.RED + "[LAUNCHER][WEB][FATAL] If you cant fix this (you dont want to open a port), Please disable the web system in the config." + Style.RESET_ALL)
+        sys.exit(0)
+
+else:
+    # Web has been disabled in config.json
+    bot.webSystem["enabled"] = False
+
 s.close()
-os.system("lxterminal -e sudo php -S " + bot.config["web"]["localIP"] + ":" + bot.config["web"]["port"] + " -t " + bot.config["rootpath"] + "/web")
-"""
-
+if bot.webSystem["enabled"]: os.system("lxterminal -e sudo php -S " + bot.config["web"]["localIP"] + ":" + bot.config["web"]["port"] + " -t " + bot.config["rootpath"] + "/web")
 os.system("lxterminal -e amixer set PCM -- 0%") # Set to default
 print("[LAUNCHER] Set volume to 0%")
 
 async def checkServerConnections():
     for server in bot.guilds:
         if not (int(server.id) == (bot.config["serverID"])):
-            print("[LAUNCHER] Bot is in " + str(server.name) + " (" + str(server.id) + "). This is not the serverID listed in Config.py. About to leave")
+            print("[LAUNCHER][CHECKSERVERCONNECTIONS] Bot is in " + str(server.name) + " (" + str(server.id) + "). This is not the serverID listed in Config.py. About to leave")
             try:
                 await server.leave()
-                print("[LAUNCHER] Successfully left " + str(server.name) + " (" + str(server.id) + ")")
+                print("[LAUNCHER][CHECKSERVERCONNECTIONS] Successfully left " + str(server.name) + " (" + str(server.id) + ")")
             except Exception:
-                print(Fore.YELLOW + "[LAUNCHER][ERROR] Couldn't leave " + str(server.name) + " (" + str(server.id) + ")" + Style.RESET_ALL)
+                print(Fore.YELLOW + "[LAUNCHER][CHECKSERVERCONNECTIONS][ERROR] Couldn't leave " + str(server.name) + " (" + str(server.id) + ")" + Style.RESET_ALL)
     return
 
 @bot.event
@@ -229,8 +267,8 @@ async def on_ready():
     localVersion = ((open(currentDir + "/data/version.txt")).read()).replace("\n", "")
     r = await bot.rawfromurl("https://raw.githubusercontent.com/MorgVerd/roomcontrolbot/master/data/version.txt?noCache=" + str(int(time.time())))
     r = r.replace("\n", "")
-    print("[LAUNCHER][VERSION CHECK] Local Version: " + localVersion)
-    print("[LAUNCHER][VERSION CHECK] Remote Version: " + r)
+    print("[LAUNCHER][VERSIONCHECK] Local Version: " + localVersion)
+    print("[LAUNCHER][VERSIONCHECK] Remote Version: " + r)
 
     # File integrity check
     supposedIntegrity = await bot.rawfromurl("https://raw.githubusercontent.com/MorgVerd/roomcontrolbot/master/data/integritykey.txt?noCache=" + str(int(time.time())))
@@ -238,27 +276,27 @@ async def on_ready():
     
     if not supposedIntegrity == integrityKey:
         bot.runningCustomVersion = True
-        print(Fore.YELLOW + "[LAUNCHER] You are running an edited version to the one on GitHub." + Style.RESET_ALL)
-        print(Fore.YELLOW + "[LAUNCHER] This means you edited some code, Or changed something in a core file." + Style.RESET_ALL)
-        print(Fore.YELLOW + "[LAUNCHER] This could make this build unstable." + Style.RESET_ALL)
+        print(Fore.YELLOW + "[LAUNCHER][INTEGRITYCHECK] You are running an edited version to the one on GitHub." + Style.RESET_ALL)
+        print(Fore.YELLOW + "[LAUNCHER][INTEGRITYCHECK] This means you edited some code, Or changed something in a core file." + Style.RESET_ALL)
+        print(Fore.YELLOW + "[LAUNCHER][INTEGRITYCHECK] This could make this build unstable." + Style.RESET_ALL)
     else:
         bot.runningCustomVersion = False
-        print(Fore.GREEN + "[LAUNCHER] You are running a stable, unedited build of this bot from GitHub." + Style.RESET_ALL)
+        print(Fore.GREEN + "[LAUNCHER][INTEGRITYCHECK] You are running a stable, unedited build of this bot from GitHub." + Style.RESET_ALL)
 
     if localVersion == r:
-        print("[LAUNCHER][VERSION CHECK] Up-to date")
+        print("[LAUNCHER][VERSIONCHECK] Up-to date")
     else:
         # Not up-to date
         if not ((pathlib.Path("ignoreversion.txt")).exists()):
-            print(Fore.RED + "[LAUNCHER][VERSION CHECK] This bot is out of date. Please update by going to:\nhttps://github.com/morgverd/roomcontrolbot\nAnd re-installing it. Remember to keep the config.json file!\n\nTo ignore this warning and continue make a txt file called 'ignoreversion.txt' in the root of the bot and put '1' in it.\n\n" + Style.RESET_ALL)
+            print(Fore.RED + "[LAUNCHER][VERSIONCHECK] This bot is out of date. Please update by going to:\nhttps://github.com/morgverd/roomcontrolbot\nAnd re-installing it. Remember to keep the config.json file!\n\nTo ignore this warning and continue make a txt file called 'ignoreversion.txt' in the root of the bot and put '1' in it.\n\n" + Style.RESET_ALL)
             input(Fore.RED + "Press enter to exit..." + Style.RESET_ALL)
             sys.exit(0)
         else:
-            print(Fore.RED + "[LAUNCHER][VERSION CHECK] Out of date, However ignore file is present." + Style.RESET_ALL)
+            print(Fore.RED + "[LAUNCHER][VERSIONCHECK] Out of date, However ignore file is present." + Style.RESET_ALL)
 
     print("[LAUNCHER] Checking for server connections.")
     await checkServerConnections()
-    print(Fore.GREEN + "[LAUNCHER] Finished lancher." + Style.RESET_ALL)
+    print(Fore.GREEN + "[LAUNCHER] Finished lancher. Comitting handoff to cogs." + Style.RESET_ALL)
     await bot.change_presence(activity=discord.Game(name='Initialising Bot...'))
     if (await bot.permissions_restrictedtime(bot)):
         await bot.speak(bot, "Initialising", isbot=True)
@@ -270,7 +308,7 @@ async def on_message(message):
     await bot.hook.messageSent(bot, message)
     if (((bot.config["token"]).upper()) in ((message.content).upper())):
         await bot.hook.tokenSent(bot, message)
-        print(Fore.YELLOW + "[LAUNCHER][WARNING] Token was mentioned in chat, Removing it" + Style.RESET_ALL)
+        print(Fore.YELLOW + "[LAUNCHER][ONMESSAGE][WARNING] Token was mentioned in chat, Removing it" + Style.RESET_ALL)
         # Token is in message
         await bot.safe_delete(message)
         await message.channel.send(embed=(await bot.generate_error(message, f"The message sent by <@{message.author.id}> contains content that we consider to be sensitive. For this reason message was deleted.")), delete_after=20)
@@ -288,7 +326,7 @@ async def on_message(message):
                     cmdList.append(alias.upper())
 
         bot.commandnames = cmdList
-        print("[LAUNCHER] Initialised Command Error detection.")
+        print("[LAUNCHER][ONMESSAGE] Initialised Command Error detection.")
 
     if message.author.id == bot.user.id: return
     if ((message.content).startswith(bot.config["prefix"])):
@@ -315,7 +353,7 @@ async def on_message(message):
                 return
             if ((str(strip_b).upper()) in (bot.commandnames)):
                 # command exists, Its a cmd
-                print(Fore.MAGENTA + "[LAUNCHER][COMMAND RAN] " + str(message.author.name) + " (" + str(message.author.id) + ")  ->  " + (str((message.content).lower()).replace(bot.config["prefix"], "")) + Style.RESET_ALL)
+                print(Fore.MAGENTA + "[LAUNCHER][ONMESSAGE][COMMAND RAN] " + str(message.author.name) + " (" + str(message.author.id) + ")  ->  " + (str((message.content).lower()).replace(bot.config["prefix"], "")) + Style.RESET_ALL)
 
                 chars = (bot.config["prefix"] + (strip_b.lower()))
                 charx = len(chars)
@@ -365,13 +403,13 @@ async def on_message(message):
         return
 
 async def presence_changer():
-    print("[LAUNCHER] Loading presence_changer()")
+    print("[LAUNCHER][PRESENCECHECKER] Loading...")
     await bot.wait_until_ready()
     await asyncio.sleep(5)
     if (await bot.permissions_restrictedtime(bot)):
         await bot.speak(bot, "Ready", isbot=True)
     else:
-        print("[LAUNCHER][SPEAK] Couldn't speak as its a restricted time")
+        print("[LAUNCHER][PRESENCECHECKER][SPEAK] Couldn't speak as its a restricted time")
     
     usedIDs = []
 
@@ -401,14 +439,14 @@ async def presence_changer():
                     break
             
             if mode.upper() == "PLAYING":
-                print("[LAUNCHER] Setting presence to 'PLAYING' '" + string + "'")
+                print("[LAUNCHER][PRESENCECHECKER] Setting presence to 'PLAYING' '" + string + "'")
                 await bot.change_presence(activity=discord.Game(name=string))
             elif mode.upper() == "WATCHING":
-                print("[LAUNCHER] Setting presence to 'WATCHING' '" + string + "'")
+                print("[LAUNCHER][PRESENCECHECKER] Setting presence to 'WATCHING' '" + string + "'")
                 activity = discord.Activity(name=string, type=discord.ActivityType.watching)
                 await bot.change_presence(activity=activity)
             else:
-                print(Fore.RED + "[LAUNCHER][ERROR] Couldn't find valid dict item to change presence. Staying the same for now." + Style.RESET_ALL)
+                print(Fore.RED + "[LAUNCHER][PRESENCECHECKER][ERROR] Couldn't find valid dict item to change presence. Staying the same for now." + Style.RESET_ALL)
 
             await bot.hook.presenceChangerUpdate(bot, (mode.upper()), string)
 
@@ -422,14 +460,14 @@ async def presence_changer():
 @bot.event
 async def on_disconnect():
     await bot.hook.disconnectEvent(bot)
-    print(Fore.RED + "[LAUNCHER][DISCONNECT] Bot application is quitting" + Style.RESET_ALL)
+    print(Fore.RED + "[LAUNCHER][ONDISCONNECT] Bot application is quitting" + Style.RESET_ALL)
     if bot.videoPlaying:
         # Video is playing
         os.system("killall vlc")
         bot.videoPlaying = False
 
     channel = bot.get_channel(bot.config["debugChannel"])
-    print(Fore.GREEN + "[LAUNCHER][RELAUNCH] Attempting to begin relaunch..." + Style.RESET_ALL)
+    print(Fore.GREEN + "[LAUNCHER][ONDISCONNECT][RELAUNCH] Attempting to begin relaunch..." + Style.RESET_ALL)
     os.system("python3 bot.py")
 
 # Check needed for Vote Command in Fun
@@ -459,11 +497,11 @@ if __name__ == "__main__":
             if (str(filename[:-3]).upper() == "NSFW"):
                 # Check NSFW config
                 if not ((bot.config["allowNSFWcommands"]) == "TRUE"):
-                    print("[LAUNCHER] NSFW Commands have been disabled. Not loading cog.")
+                    print("[LAUNCHER][MAIN] NSFW Commands have been disabled. Not loading cog.")
                     do = False
             if do:
                 bot.load_extension(f'cogs.{filename[:-3]}')
-                print(f"[LAUNCHER][INFO] Loaded Cog : {filename[:-3]}")
+                print(f"[LAUNCHER][MAIN][INFO] Loaded Cog : {filename[:-3]}")
 
 
 presence_changer_task = bot.loop.create_task(presence_changer())
@@ -480,4 +518,8 @@ except Exception as e:
     else:
         errorMessage = ("Unknown error message: " + err)
 
-    print(Fore.RED + "\n" + errorMessage + Style.RESET_ALL)
+    print(Fore.RED + "\n[LAUNCHER][END][FATAL] " + errorMessage + Style.RESET_ALL)
+    os.system("sudo killall vlc") # VLC Player for music
+    if bot.webSystem["enabled"]: os.system("sudo killall php") # Stop any running webserver
+    print(Fore.GREEN + "[LAUNCHER][END] Successfully stopped all running processes (VLC, PHP)" + Style.RESET_ALL)
+    sys.exit(0)

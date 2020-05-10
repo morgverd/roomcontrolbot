@@ -21,8 +21,9 @@
         "maximumtime" : 21
     },
     "web" : {
+        "enabled" : "TRUE",
         "localIP" : "192.168.XX.XX",
-        "port" : "8000"
+        "port" : "48888"
     },
     "rootpath" : "/home/location/of/bot",
     "allowNSFWcommands" : "TRUE",
