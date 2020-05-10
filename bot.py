@@ -222,8 +222,6 @@ async def on_member_update(before, after):
         await channel.send(embed=embed)
     return
 
-
-
 @bot.event
 async def on_ready():
     print("[LAUNCHER] on_ready() triggered. Bot active.")
@@ -238,7 +236,7 @@ async def on_ready():
     supposedIntegrity = await bot.rawfromurl("https://raw.githubusercontent.com/MorgVerd/roomcontrolbot/master/data/integritykey.txt?noCache=" + str(int(time.time())))
     integrityKey = str(integrityCheck.getIntegrityKey(bot.config["rootpath"]))
     
-    if not supposedIntegrity == integritykey:
+    if not supposedIntegrity == integrityKey:
     	bot.runningCustomVersion = True
     	print(Fore.YELLOW + "[LAUNCHER] You are running an edited version to the one on GitHub." + Style.RESET_ALL)
     	print(Fore.YELLOW + "[LAUNCHER] This means you edited some code, Or changed something in a core file." + Style.RESET_ALL)
