@@ -237,13 +237,13 @@ async def on_ready():
     integrityKey = str(integrityCheck.getIntegrityKey(bot.config["rootpath"]))
     
     if not supposedIntegrity == integrityKey:
-    	bot.runningCustomVersion = True
-    	print(Fore.YELLOW + "[LAUNCHER] You are running an edited version to the one on GitHub." + Style.RESET_ALL)
-    	print(Fore.YELLOW + "[LAUNCHER] This means you edited some code, Or changed something in a core file." + Style.RESET_ALL)
-    	print(Fore.YELLOW + "[LAUNCHER] This could make this build unstable." + Style.RESET_ALL)
+        bot.runningCustomVersion = True
+        print(Fore.YELLOW + "[LAUNCHER] You are running an edited version to the one on GitHub." + Style.RESET_ALL)
+        print(Fore.YELLOW + "[LAUNCHER] This means you edited some code, Or changed something in a core file." + Style.RESET_ALL)
+        print(Fore.YELLOW + "[LAUNCHER] This could make this build unstable." + Style.RESET_ALL)
     else:
-    	bot.runningCustomVersion = False
-    	print(Fore.GREEN + "[LAUNCHER] You are running a stable, unedited build of this bot from GitHub." + Style.RESET_ALL)
+        bot.runningCustomVersion = False
+        print(Fore.GREEN + "[LAUNCHER] You are running a stable, unedited build of this bot from GitHub." + Style.RESET_ALL)
 
     if localVersion == r:
         print("[LAUNCHER][VERSION CHECK] Up-to date")
@@ -467,4 +467,17 @@ if __name__ == "__main__":
 
 
 presence_changer_task = bot.loop.create_task(presence_changer())
-bot.run(bot.config["token"])
+try:
+    bot.run(bot.config["token"])
+except Exception as e:
+    err = str((e.args[0]).upper())
+    knownErrorDefintions = {
+        "EVENT LOOP STOPPED BEFORE FUTURE COMPLETED." : "You pressed CTRL+C to shutdown the bot.",
+        "IMPROPER TOKEN HAS BEEN PASSED." : "Invalid token given, Please check your config.json"
+    }
+    if str(err) in knownErrorDefintions:
+        errorMessage = knownErrorDefintions[err]
+    else:
+        errorMessage = ("Unknown error message: " + err)
+
+    print(Fore.RED + "\n" + errorMessage + Style.RESET_ALL)

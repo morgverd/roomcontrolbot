@@ -17,7 +17,6 @@ import asyncio
 import aiohttp
 
 
-
 # Removes the aiohttp ClientSession instance warning.
 class HTTPSession(aiohttp.ClientSession):
     """ Abstract class for aiohttp. """
@@ -32,9 +31,7 @@ class HTTPSession(aiohttp.ClientSession):
         Useful for things like when the interpreter closes.
         This would be perfect if discord.py had this as well. :thinking:
         """
-        if not self.closed:
-            self.close()
-
+        return
 
 session = HTTPSession()
 
