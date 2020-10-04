@@ -227,5 +227,7 @@ import package
 # One important thing to remember, Is not to use safe_import() as an actual importer. All it does is checks if it exists and downloads it if it dosent. You should still import tha package seperately after running this command.
 # Since bot.py is ran first, This will install any packages needed then load Cogs, So you can put new packages in your Cog without downloading them first aslong as you define them here.
 ```
+## Todo
+I want to soon completely overhaul the Permissions System to allow for each role to have an assosiated weight, This should fix issues with users needing hyper specific roles to do certain things.
 ## License
 [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
