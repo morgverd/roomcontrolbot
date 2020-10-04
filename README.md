@@ -1,5 +1,8 @@
 <p align="center">
-  <img width="740" height="160" src="https://img.morgverd.xyz/github/roomcontrol/logo.png" alt="Room Control Logo">
+  <img width="740" height="160" src="https://cdn.morgverd.com/content/img/github/roomcontrol/logo.png" alt="Room Control Logo">
+  <!--
+    New Icon from shockingly enough, My new website CDN system!
+  -->
 </p>
 <h2 align="center"><i>An Abomination to Discord Bots</i></h2><br>
 
