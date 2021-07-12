@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="740" height="160" src="https://cdn.morgverd.com/content/img/github/roomcontrol/logo.png" alt="Room Control Logo">
+  <img width="740" height="160" src="https://cdn.morgverd.com/images/github/roomcontrolbot/logo.png" alt="Room Control Logo">
   <!--
     New Icon from shockingly enough, My new website CDN system!
   -->
