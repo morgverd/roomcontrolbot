@@ -4,7 +4,10 @@
     New Icon from shockingly enough, My new website CDN system!
   -->
 </p>
-<h2 align="center"><i>An Abomination to Discord Bots</i></h2><br>
+<h2 align="center">
+  <i>An Abomination to Discord Bots</i><br>
+  <i>This is a very old project, it should NOT be used. It is only here for archival purposes.</i>
+</h2><br>
 
 This discord bot controls your PI3 and enables it to play music through a YouTube based search system and a text to speech system that allows users that you give a role to access to speak in your room.
 \
